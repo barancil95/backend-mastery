@@ -14,3 +14,4 @@ minio:
   access-key: ${MINIO_ACCESS_KEY:minioadmin}
   secret-key: ${MINIO_SECRET_KEY:minioadmin}
   bucket-name: ${MINIO_BUCKET_NAME:product-images}
+  region: ${MINIO_REGION:eu-north-1}

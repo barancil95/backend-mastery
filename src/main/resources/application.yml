@@ -1,0 +1,66 @@
+# ============================================================
+# application.yml — TÜM PROFİLLERDE ORTAK AYARLAR
+# ============================================================
+# Bu dosya hangi profil aktif olursa olsun (dev, prod) yüklenir.
+# Profillere özel ayarlar application-dev.yml / application-prod.yml'de olur.
+# ============================================================
+
+spring:
+  application:
+    name: backend-mastery
+
+  # -- Aktif Profil --
+  # Varsayılan olarak 'dev' profilini kullan.
+  # Production'da bu değer ortam değişkeni ile override edilir:
+  #   SPRING_PROFILES_ACTIVE=prod
+  profiles:
+    active: dev
+
+  # -- JPA / Hibernate Ayarları --
+  jpa:
+    # ÖNEMLİ: ddl-auto=none → Hibernate tablo oluşturmayacak!
+    # Tablo yönetimini tamamen Flyway'e bırakıyoruz.
+    # Bu, production ortamında ALTIN STANDARTTIR çünkü:
+    #   - Her değişiklik versiyonlu ve geri alınabilir
+    #   - Takımdaki herkes aynı şemayı kullanır
+    #   - Hangi değişikliğin ne zaman yapıldığı kayıt altında
+    hibernate:
+      ddl-auto: none
+    # SQL sorgularını konsola yazdır (geliştirme amaçlı)
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # -- Thymeleaf Ayarları --
+  thymeleaf:
+    # Cache'i kapat → HTML değişikliklerini yeniden başlatmadan görmek için.
+    # Production'da true yapılır (performans için).
+    cache: false
+
+  # -- Flyway Ayarları --
+  flyway:
+    enabled: true
+    # Migration SQL dosyalarının yeri
+    locations: classpath:db/migration
+    # Flyway'in kendi metadata tablosunun adı
+    table: flyway_schema_history
+
+# -- Sunucu Ayarları --
+server:
+  port: 8080
+
+# -- Loglama Ayarları --
+# Slf4j + Logback (Spring Boot varsayılanı) kullanıyoruz.
+# Log seviyeleri (düşükten yükseğe): TRACE → DEBUG → INFO → WARN → ERROR
+#   - TRACE: En detaylı, genelde kullanılmaz
+#   - DEBUG: Geliştirme sırasında detaylı bilgi
+#   - INFO:  Normal operasyonel bilgiler ("Sipariş oluşturuldu" gibi)
+#   - WARN:  Potansiyel sorunlar ("Disk %90 dolu" gibi)
+#   - ERROR: Gerçek hatalar ("DB bağlantısı koptu" gibi)
+logging:
+  level:
+    # Kendi paketimiz DEBUG seviyesinde → geliştirme sırasında detay görelim
+    com.baranproject.backendmastery: DEBUG
+    # Flyway migration logları
+    org.flywaydb: INFO

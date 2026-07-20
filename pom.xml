@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        Spring Boot Parent POM:
+        Tüm Spring Boot bağımlılıklarının versiyonlarını otomatik yönetir.
+        Böylece her dependency'ye tek tek versiyon yazmamıza gerek kalmaz.
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/>
+    </parent>
+
+    <!-- Proje Bilgileri -->
+    <groupId>com.baranproject</groupId>
+    <artifactId>backend-mastery</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>backend-mastery</name>
+    <description>Görsel Destekli Ürün ve Sipariş Sistemi</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <lombok.version>1.18.46</lombok.version>
+        <minio.version>8.5.13</minio.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- ==================== CORE ==================== -->
+
+        <!--
+            spring-boot-starter-web:
+            Gömülü Tomcat sunucusu + Spring MVC (REST Controller desteği).
+            Bu sayede uygulamayı ayrı bir sunucu kurmadan çalıştırabiliriz.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            spring-boot-starter-data-jpa:
+            Hibernate ORM + Spring Data JPA.
+            Entity sınıflarını veritabanı tablolarına otomatik eşler.
+            Repository interface'leri ile CRUD işlemleri tek satırda yapılır.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            spring-boot-starter-thymeleaf:
+            Server-side HTML template engine.
+            Controller'dan gelen verileri HTML sayfalarında göstermemizi sağlar.
+            JSP'nin modern alternatifi.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!--
+            spring-boot-starter-validation:
+            Jakarta Bean Validation (eski adıyla javax.validation).
+            DTO'larda @NotNull, @NotBlank, @Size gibi anotasyonlarla
+            gelen verileri otomatik doğrulamamızı sağlar.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- ==================== MESSAGING ==================== -->
+
+        <!--
+            spring-boot-starter-amqp:
+            RabbitMQ ile asenkron mesajlaşma altyapısı.
+            Sipariş verildiğinde event'i kuyruğa atıp,
+            arka planda işlenmesini sağlayacağız.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
+        <!-- ==================== DATABASE ==================== -->
+
+        <!--
+            PostgreSQL JDBC Driver:
+            Spring Boot'un PostgreSQL veritabanına bağlanabilmesi için gerekli sürücü.
+        -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            Flyway Core + PostgreSQL modülü:
+            Veritabanı şemasını SQL migration dosyalarıyla yönetir.
+            ddl-auto=update yerine, her değişikliği versiyonlu SQL ile yaparız.
+            Bu, production ortamında altın standarttır.
+        -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+        <!-- ==================== FILE STORAGE ==================== -->
+
+        <!--
+            MinIO Java SDK:
+            AWS S3 uyumlu nesne depolama istemcisi.
+            Lokalde MinIO, production'da gerçek S3 ile çalışır.
+            Aynı API, farklı endpoint — bu yüzden geçiş çok kolay.
+        -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
+
+        <!-- ==================== DEVELOPER TOOLS ==================== -->
+
+        <!--
+            Lombok:
+            @Getter, @Setter, @Builder, @Slf4j gibi anotasyonlarla
+            boilerplate kodu (getter/setter/constructor) ortadan kaldırır.
+            compile-time'da çalışır, runtime'da iz bırakmaz.
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- ==================== TESTING ==================== -->
+
+        <!--
+            spring-boot-starter-test:
+            JUnit 5 + Mockito + AssertJ + Spring Test.
+            Unit ve integration testler için her şey bu pakette.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+                Maven Compiler Plugin:
+                Lombok'un compile-time'da getter/setter üretebilmesi için
+                annotation processor olarak tanımlanması gerekir.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>17</release>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!--
+                Spring Boot Maven Plugin:
+                - 'mvn spring-boot:run' ile uygulamayı çalıştırır
+                - 'mvn package' ile çalıştırılabilir fat JAR üretir
+                - Lombok'u build sürecinden hariç tutar (runtime'da gereksiz)
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

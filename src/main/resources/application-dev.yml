@@ -1,0 +1,40 @@
+# ============================================================
+# application-dev.yml — LOKAL GELİŞTİRME (DEV) PROFİLİ
+# ============================================================
+# Bu dosya SADECE spring.profiles.active=dev olduğunda yüklenir.
+# application.yml'deki ortak ayarların ÜSTÜNE eklenir.
+# Aynı key varsa, bu dosyadaki değer kazanır (override).
+# ============================================================
+
+spring:
+  # -- PostgreSQL Bağlantısı (Localhost) --
+  datasource:
+    url: jdbc:postgresql://localhost:5432/backend_mastery
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  # -- RabbitMQ Bağlantısı (Localhost) --
+  # Şimdilik bağlantı bilgilerini hazır tutuyoruz.
+  # RabbitMQ henüz kurulu olmasa bile uygulama hata vermez,
+  # çünkü bağlantıyı kullanmaya başlayana kadar sorun çıkmaz.
+  # NOT: Eğer RabbitMQ çalışmıyorsa başlangıçta bağlantı hatası alabilirsin.
+  # O zaman RabbitMQ kurulumu adımında bunu çözeceğiz.
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+# ============================================================
+# MinIO Bağlantısı (Localhost — S3 Simülatörü)
+# ============================================================
+# Spring'in kendi property'si değil, custom property.
+# @Value("${minio.endpoint}") ile okuyacağız.
+# MinIO kurulumu ileriki adımlarda yapılacak.
+minio:
+  endpoint: http://localhost:9000
+  public-url: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket-name: product-images

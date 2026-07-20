@@ -13,23 +13,26 @@ import java.time.OffsetDateTime;
  *
  * === KULLANILAN ANOTASYONLAR ===
  *
- * @Entity        → Bu sınıfın bir JPA entity'si (veritabanı tablosu) olduğunu belirtir.
- *                   Hibernate bu sınıfı veritabanındaki bir tablo ile eşleştirir.
+ * @Entity → Bu sınıfın bir JPA entity'si (veritabanı tablosu) olduğunu
+ *         belirtir.
+ *         Hibernate bu sınıfı veritabanındaki bir tablo ile eşleştirir.
  *
- * @Table          → Tablo adını açıkça belirtir. Yazmazsak sınıf adı kullanılır.
- *                   Best practice: her zaman açıkça yaz.
+ * @Table → Tablo adını açıkça belirtir. Yazmazsak sınıf adı kullanılır.
+ *        Best practice: her zaman açıkça yaz.
  *
- * @Getter/@Setter → Lombok: tüm alanlar için getter/setter metodlarını otomatik üretir.
- *                   Böylece 50 satır boilerplate kod yazmaktan kurtuluruz.
+ * @Getter/@Setter → Lombok: tüm alanlar için getter/setter metodlarını otomatik
+ *                 üretir.
+ *                 Böylece 50 satır boilerplate kod yazmaktan kurtuluruz.
  *
  * @NoArgsConstructor → Lombok: parametresiz constructor üretir.
- *                      JPA spesifikasyonu bunu ZORUNLU kılar (reflection ile nesne oluşturur).
+ *                    JPA spesifikasyonu bunu ZORUNLU kılar (reflection ile
+ *                    nesne oluşturur).
  *
  * @AllArgsConstructor → Lombok: tüm alanları parametre alan constructor üretir.
- *                       Test yazarken veya Builder pattern'de kullanışlıdır.
+ *                     Test yazarken veya Builder pattern'de kullanışlıdır.
  *
- * @Builder        → Lombok: Builder pattern ile nesne oluşturmayı sağlar.
- *                   Örnek: Product.builder().name("Laptop").price(...).build();
+ * @Builder → Lombok: Builder pattern ile nesne oluşturmayı sağlar.
+ *          Örnek: Product.builder().name("Laptop").price(...).build();
  */
 @Entity
 @Table(name = "products")
@@ -41,10 +44,11 @@ import java.time.OffsetDateTime;
 public class Product {
 
     /**
-     * @Id              → Bu alanın Primary Key olduğunu belirtir.
-     * @GeneratedValue   → Değerin otomatik üretileceğini belirtir.
-     * GenerationType.IDENTITY → Veritabanının auto-increment özelliğini kullan
-     *                           (PostgreSQL'de BIGSERIAL).
+     * @Id → Bu alanın Primary Key olduğunu belirtir.
+     * @GeneratedValue → Değerin otomatik üretileceğini belirtir.
+     *                 GenerationType.IDENTITY → Veritabanının auto-increment
+     *                 özelliğini kullan
+     *                 (PostgreSQL'de BIGSERIAL).
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,11 +56,12 @@ public class Product {
 
     /**
      * @Column → Sütun özelliklerini belirtir.
-     *   nullable = false → SQL'deki NOT NULL kısıtlaması
-     *   length = 255     → VARCHAR(255) ile eşleşir
+     *         nullable = false → SQL'deki NOT NULL kısıtlaması
+     *         length = 255 → VARCHAR(255) ile eşleşir
      *
-     * NOT: Flyway zaten bu kısıtlamaları SQL'de tanımladı.
-     * Buradaki @Column, JPA seviyesinde doğrulama ve dokümantasyon amaçlıdır.
+     *         NOT: Flyway zaten bu kısıtlamaları SQL'de tanımladı.
+     *         Buradaki @Column, JPA seviyesinde doğrulama ve dokümantasyon
+     *         amaçlıdır.
      */
     @Column(nullable = false, length = 255)
     private String name;
@@ -90,12 +95,14 @@ public class Product {
 
     /**
      * @CreationTimestamp → Hibernate, entity ilk kaydedildiğinde
-     *                      bu alana otomatik olarak şu anki zamanı yazar.
-     *                      Manuel set etmeye gerek yok!
+     *                    bu alana otomatik olarak şu anki zamanı yazar.
+     *                    Manuel set etmeye gerek yok!
      *
-     * updatable = false  → Bu alan sonradan güncellenemez (oluşturma tarihi sabit kalır).
+     *                    updatable = false → Bu alan sonradan güncellenemez
+     *                    (oluşturma tarihi sabit kalır).
      *
-     * OffsetDateTime → Saat dilimi bilgisini de tutar (TIMESTAMP WITH TIME ZONE).
+     *                    OffsetDateTime → Saat dilimi bilgisini de tutar (TIMESTAMP
+     *                    WITH TIME ZONE).
      */
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -103,7 +110,7 @@ public class Product {
 
     /**
      * @UpdateTimestamp → Hibernate, entity her güncellendiğinde
-     *                    bu alana otomatik olarak şu anki zamanı yazar.
+     *                  bu alana otomatik olarak şu anki zamanı yazar.
      */
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)

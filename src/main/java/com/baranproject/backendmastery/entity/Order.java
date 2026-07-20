@@ -38,15 +38,18 @@ public class Order {
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
     /**
-     * @Enumerated(EnumType.STRING) → Enum değerini veritabanına STRING olarak kaydeder.
+     * @Enumerated(EnumType.STRING) → Enum değerini veritabanına STRING olarak
+     * kaydeder.
      *
      * İki seçenek vardır:
-     *   - EnumType.ORDINAL → Sıra numarasını kaydeder (0, 1, 2...) — TEHLİKELİ!
-     *     Eğer enum'a yeni bir değer eklenirse, eski verilerin anlamı değişir.
-     *   - EnumType.STRING  → Değerin adını kaydeder ("PENDING", "CONFIRMED"...) — GÜVENLİ!
-     *     Sıra değişse bile veri bütünlüğü korunur.
+     * - EnumType.ORDINAL → Sıra numarasını kaydeder (0, 1, 2...) — TEHLİKELİ!
+     * Eğer enum'a yeni bir değer eklenirse, eski verilerin anlamı değişir.
+     * - EnumType.STRING → Değerin adını kaydeder ("PENDING", "CONFIRMED"...) —
+     * GÜVENLİ!
+     * Sıra değişse bile veri bütünlüğü korunur.
      *
-     * columnDefinition = "order_status" → PostgreSQL'deki custom ENUM tipini kullan.
+     * columnDefinition = "order_status" → PostgreSQL'deki custom ENUM tipini
+     * kullan.
      */
     @Enumerated(EnumType.STRING)
     @org.hibernate.annotations.JdbcType(org.hibernate.dialect.PostgreSQLEnumJdbcType.class)
@@ -58,23 +61,29 @@ public class Order {
      *
      * @OneToMany → Bir Order'ın birden fazla OrderItem'ı olabilir.
      *
-     * mappedBy = "order" → İlişkinin "sahibi" OrderItem tarafındaki 'order' alanıdır.
-     *   JPA'da her ilişkinin bir "sahibi" (owning side) ve bir "ters tarafı" (inverse side) vardır.
-     *   Foreign key, OrderItem (order_items) tablosundadır → OrderItem sahip taraf.
-     *   mappedBy diyerek "FK bende değil, karşı tarafta" demiş oluyoruz.
+     *            mappedBy = "order" → İlişkinin "sahibi" OrderItem tarafındaki
+     *            'order' alanıdır.
+     *            JPA'da her ilişkinin bir "sahibi" (owning side) ve bir "ters
+     *            tarafı" (inverse side) vardır.
+     *            Foreign key, OrderItem (order_items) tablosundadır → OrderItem
+     *            sahip taraf.
+     *            mappedBy diyerek "FK bende değil, karşı tarafta" demiş oluyoruz.
      *
-     * cascade = CascadeType.ALL → Order kaydedilirken/silinirken,
-     *   bağlı OrderItem'lar da otomatik kaydedilir/silinir.
-     *   - PERSIST: Order save → item'lar da save
-     *   - MERGE:   Order update → item'lar da update
-     *   - REMOVE:  Order delete → item'lar da delete
+     *            cascade = CascadeType.ALL → Order kaydedilirken/silinirken,
+     *            bağlı OrderItem'lar da otomatik kaydedilir/silinir.
+     *            - PERSIST: Order save → item'lar da save
+     *            - MERGE: Order update → item'lar da update
+     *            - REMOVE: Order delete → item'lar da delete
      *
-     * orphanRemoval = true → Order'ın items listesinden çıkarılan bir item,
-     *   veritabanından da silinir (yetim kalmasın).
+     *            orphanRemoval = true → Order'ın items listesinden çıkarılan bir
+     *            item,
+     *            veritabanından da silinir (yetim kalmasın).
      *
-     * fetch = FetchType.LAZY → İlişkili veriler SADECE erişildiğinde yüklenir.
-     *   EAGER olsaydı, her Order sorgulandığında TÜM item'lar da yüklenirdi → performans kaybı.
-     *   LAZY = "İhtiyaç olduğunda getir" → Best practice!
+     *            fetch = FetchType.LAZY → İlişkili veriler SADECE erişildiğinde
+     *            yüklenir.
+     *            EAGER olsaydı, her Order sorgulandığında TÜM item'lar da
+     *            yüklenirdi → performans kaybı.
+     *            LAZY = "İhtiyaç olduğunda getir" → Best practice!
      */
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default

@@ -35,7 +35,7 @@ public class OrderItemDTO {
 
     @NotNull(message = "Adet boş olamaz")
     @Positive(message = "Adet en az 1 olmalı")
-    private Integer quantity;
+    private Integer quantity = 1;
 
     // Birim fiyat — kullanıcı göndermez, Service ürünün fiyatına bakıp set eder
     private BigDecimal unitPrice;

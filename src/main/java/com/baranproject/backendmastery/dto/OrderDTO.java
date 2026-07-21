@@ -1,5 +1,6 @@
 package com.baranproject.backendmastery.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -43,5 +44,6 @@ public class OrderDTO {
 
     // Sipariş kalemleri — en az 1 kalem olmalı (boş sipariş olmaz)
     @NotEmpty(message = "Sipariş en az 1 ürün içermeli")
+    @Valid
     private List<OrderItemDTO> items;
 }

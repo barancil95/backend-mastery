@@ -2,9 +2,9 @@ name: Java CI/CD with Maven
 
 on: 
   push:
-    branches: ['master']
+    branches: ['main']
   pull_request:
-    branches: ['master']
+    branches: ['main']
 
 jobs:
   build:
@@ -22,3 +22,21 @@ jobs:
 
       - name: Build with Maven
         run: mvn -B clean package
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    # Sadece 'main' branch'ine push yapıldığında deploy et (Pull requestlerde deploy etme)
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/backend-mastery
+            git pull origin main
+            docker compose up --build -d app
+            docker system prune -f

@@ -1,7 +1,10 @@
 package com.baranproject.backendmastery.listener;
 
 import com.baranproject.backendmastery.config.RabbitMQConfig;
+import com.baranproject.backendmastery.entity.OrderStatus;
 import com.baranproject.backendmastery.event.OrderCreatedEvent;
+import com.baranproject.backendmastery.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -11,7 +14,10 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class OrderEventListener {
+
+    private final OrderRepository orderRepository;
 
     /**
      * order.queue kuyruğuna gelen mesajları asenkron olarak dinler.
@@ -27,6 +33,14 @@ public class OrderEventListener {
         log.info("Müşteri: {}", event.getCustomerName());
         log.info("E-posta: {}", event.getCustomerEmail());
         log.info("Toplam Tutar: ₺{}", event.getTotalAmount());
-        log.info(">>>> [ASENKRON ALICI] Sipariş işleme süreci başlatıldı (Örn: E-posta gönderimi). <<<<");
+        
+        // Asenkron olarak veritabanına gidip siparişi CONFIRMED (Onaylandı) yapıyoruz
+        orderRepository.findById(event.getOrderId()).ifPresent(order -> {
+            order.setStatus(OrderStatus.CONFIRMED);
+            orderRepository.save(order);
+            log.info(">>>> [ASENKRON ALICI] Sipariş durumu CONFIRMED olarak güncellendi: ID={} <<<<", order.getId());
+        });
+
+        log.info(">>>> [ASENKRON ALICI] Sipariş işleme süreci başarıyla tamamlandı. <<<<");
     }
 }

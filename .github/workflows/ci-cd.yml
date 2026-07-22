@@ -39,4 +39,4 @@ jobs:
             cd ~/backend-mastery
             git pull origin main
             docker compose up --build -d app
-            docker system prune -f
+            docker system prune -a -f

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - MasteryMarket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            color: #f8fafc;
+        }
+        .auth-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .brand-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .form-control {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 12px;
+        }
+        .form-control:focus {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: #818cf8;
+            color: #fff;
+            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.25);
+        }
+        .btn-primary-custom {
+            background: linear-gradient(to right, #6366f1, #a855f7);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 16px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary-custom:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="brand-logo"><i class="fa-solid fa-store me-2"></i>MasteryMarket</div>
+        <p class="text-center text-slate-400 mb-4" style="color: #94a3b8;">Yeni bir hesap oluşturun</p>
+
+        <!-- Hata Mesajı -->
+        <div th:if="${errorMessage}" class="alert alert-danger py-2" role="alert" style="font-size: 0.9rem;" th:text="${errorMessage}">
+        </div>
+
+        <form th:action="@{/register}" th:object="${userDto}" method="post">
+            <div class="mb-3">
+                <label class="form-label" style="color: #cbd5e1;">Ad Soyad</label>
+                <input type="text" th:field="*{fullName}" class="form-control" placeholder="Baran Çil" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" style="color: #cbd5e1;">E-Posta</label>
+                <input type="email" th:field="*{email}" class="form-control" placeholder="ornek@email.com" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" style="color: #cbd5e1;">Şifre</label>
+                <input type="password" th:field="*{password}" class="form-control" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary-custom">Kayıt Ol</button>
+        </form>
+
+        <div class="text-center mt-4" style="font-size: 0.9rem; color: #94a3b8;">
+            Zaten hesabınız var mı? <a th:href="@{/login}" style="color: #c084fc; text-decoration: none;" class="fw-bold">Giriş Yapın</a>
+        </div>
+    </div>
+</body>
+</html>

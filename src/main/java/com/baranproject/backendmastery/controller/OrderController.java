@@ -7,12 +7,14 @@ import com.baranproject.backendmastery.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import java.security.Principal;
 import java.util.ArrayList;
 
 @Slf4j
@@ -26,8 +28,16 @@ public class OrderController {
 
     // Sipariş listesi
     @GetMapping
-    public String listOrders(Model model) {
-        model.addAttribute("orders", orderService.getAllOrders());
+    public String listOrders(Model model, Principal principal, Authentication authentication) {
+
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            model.addAttribute("orders", orderService.getAllOrders());
+            return "orders/list";
+        } else {
+            model.addAttribute("orders", orderService.getOrdersByCustomerEmail(principal.getName()));
+        }
         return "orders/list";
     }
 
@@ -40,12 +50,16 @@ public class OrderController {
 
     // Sipariş formu — ürün listesini de gönderiyoruz (hangi ürünü sipariş edecek?)
     @GetMapping("/new")
-    public String showOrderForm(Model model) {
+    public String showOrderForm(Model model, Principal principal) {
         OrderDTO orderDTO = new OrderDTO();
         // Başlangıçta 1 boş kalem ile başlat
         orderDTO.setItems(new ArrayList<>());
         orderDTO.getItems().add(new OrderItemDTO());
+        if (principal != null) {
 
+            orderDTO.setCustomerEmail(principal.getName());
+        }
+        orderDTO.setCustomerName(principal.getName());
         model.addAttribute("order", orderDTO);
         model.addAttribute("products", productService.getAllProducts());
         return "orders/form";
@@ -54,9 +68,9 @@ public class OrderController {
     // Sipariş oluşturma
     @PostMapping
     public String createOrder(@Valid @ModelAttribute("order") OrderDTO dto,
-                              BindingResult result,
-                              Model model,
-                              RedirectAttributes redirectAttributes) {
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("products", productService.getAllProducts());
             return "orders/form";

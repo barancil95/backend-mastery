@@ -1,90 +1,146 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="tr">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
 <head>
     <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siparişler — Backend Mastery</title>
+    <title>Siparişler - MasteryMarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
-        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; }
-        .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
+        .navbar {
+            background: rgba(30, 41, 59, 0.8) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .brand-logo {
+            font-weight: 800;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+        .table-dark-custom {
+            background: rgba(15, 23, 42, 0.6);
+            color: #f8fafc;
+        }
+        .btn-purple {
+            background: linear-gradient(to right, #6366f1, #a855f7);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        .btn-purple:hover {
+            opacity: 0.9;
+            color: white;
+        }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/"><i class="bi bi-box-seam"></i> Backend Mastery</a>
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link" th:href="@{/products}"><i class="bi bi-grid"></i> Ürünler</a>
-            <a class="nav-link active" th:href="@{/orders}"><i class="bi bi-cart"></i> Siparişler</a>
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand brand-logo fs-3" th:href="@{/products}">
+                <i class="fa-solid fa-store me-2"></i>MasteryMarket
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/products}"><i class="fa-solid fa-box me-1"></i> Ürünler</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/orders}"><i class="fa-solid fa-receipt me-1"></i> Siparişlerim</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Kullanıcı Bilgisi ve Logout Dropdown -->
+                    <div sec:authorize="isAuthenticated()" class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle btn-sm rounded-pill px-3" type="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-user-circle me-1"></i>
+                            <span sec:authentication="name">Kullanıcı</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow">
+                            <li><span class="dropdown-item-text text-muted" style="font-size: 0.8rem;">Giriş Yapıldı</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i> Çıkış Yap
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold m-0"><i class="fa-solid fa-receipt me-2 text-indigo" style="color: #818cf8;"></i>Sipariş Geçmişi</h2>
+                <p class="text-secondary m-0">Verdiğiniz siparişlerin anlık durumunu takip edin</p>
+            </div>
+            <a th:href="@{/products}" class="btn btn-purple btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-plus me-1"></i> Yeni Sipariş Ver
+            </a>
+        </div>
+
+        <div class="card p-4">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle m-0">
+                    <thead>
+                        <tr class="text-secondary">
+                            <th>#ID</th>
+                            <th>Müşteri Adı</th>
+                            <th>E-Posta</th>
+                            <th>Toplam Tutar</th>
+                            <th>Durum</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td class="fw-bold" th:text="'#' + ${order.id}">#1</td>
+                            <td th:text="${order.customerName}">Baran Çil</td>
+                            <td th:text="${order.customerEmail}">email@example.com</td>
+                            <td class="fw-bold text-success" th:text="'₺' + ${order.totalAmount}">₺0.00</td>
+                            <td>
+                                <span th:if="${order.status == 'PENDING'}" class="badge bg-warning text-dark">Beklemede</span>
+                                <span th:if="${order.status == 'CONFIRMED'}" class="badge bg-success">Onaylandı</span>
+                                <span th:if="${order.status == 'CANCELLED'}" class="badge bg-danger">İptal Edildi</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-outline-info btn-sm rounded-pill">
+                                    <i class="fa-solid fa-eye me-1"></i> Detay
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="6" class="text-center text-secondary py-4">Henüz verilmiş bir sipariş bulunmuyor.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</nav>
 
-<div class="container py-4">
-
-    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
-        <i class="bi bi-check-circle"></i> <span th:text="${successMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-cart"></i> Siparişler</h2>
-        <a th:href="@{/orders/new}" class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i> Yeni Sipariş
-        </a>
-    </div>
-
-    <div th:if="${#lists.isEmpty(orders)}" class="text-center py-5">
-        <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
-        <p class="text-muted mt-3">Henüz sipariş verilmemiş.</p>
-    </div>
-
-    <div class="card" th:unless="${#lists.isEmpty(orders)}">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Müşteri</th>
-                        <th>E-posta</th>
-                        <th>Toplam</th>
-                        <th>Durum</th>
-                        <th>Ürün Sayısı</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="order : ${orders}">
-                        <td th:text="${order.id}">#</td>
-                        <td th:text="${order.customerName}">İsim</td>
-                        <td th:text="${order.customerEmail}">Email</td>
-                        <td class="fw-bold">₺<span th:text="${#numbers.formatDecimal(order.totalAmount, 1, 2)}">0.00</span></td>
-                        <td>
-                            <span class="badge"
-                                  th:classappend="${order.status == 'PENDING' ? 'bg-warning text-dark' :
-                                                   order.status == 'CONFIRMED' ? 'bg-info' :
-                                                   order.status == 'SHIPPED' ? 'bg-primary' :
-                                                   order.status == 'DELIVERED' ? 'bg-success' : 'bg-danger'}"
-                                  th:text="${order.status}">PENDING</span>
-                        </td>
-                        <td th:text="${order.items.size()}">0</td>
-                        <td>
-                            <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i> Detay
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

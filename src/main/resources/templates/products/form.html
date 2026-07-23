@@ -1,102 +1,155 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="tr">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ürün Ekle/Düzenle — Backend Mastery</title>
+    <title>Ürün Yönetimi - MasteryMarket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
-        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; }
-        .form-card { border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+        }
+        .navbar {
+            background: rgba(30, 41, 59, 0.8) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .brand-logo {
+            font-weight: 800;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        .form-control {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 12px;
+        }
+        .form-control:focus {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: #818cf8;
+            color: #fff;
+            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.25);
+        }
+        .btn-purple {
+            background: linear-gradient(to right, #6366f1, #a855f7);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        .btn-purple:hover {
+            opacity: 0.9;
+            color: white;
+        }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/"><i class="bi bi-box-seam"></i> Backend Mastery</a>
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link active" th:href="@{/products}"><i class="bi bi-grid"></i> Ürünler</a>
-            <a class="nav-link" th:href="@{/orders}"><i class="bi bi-cart"></i> Siparişler</a>
-        </div>
-    </div>
-</nav>
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand brand-logo fs-3" th:href="@{/products}">
+                <i class="fa-solid fa-store me-2"></i>MasteryMarket
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/products}"><i class="fa-solid fa-box me-1"></i> Ürünler</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/orders}"><i class="fa-solid fa-receipt me-1"></i> Siparişlerim</a>
+                    </li>
+                </ul>
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card form-card p-4">
-                <h3 class="mb-4">
-                    <i class="bi" th:classappend="${product.id != null ? 'bi-pencil' : 'bi-plus-circle'}"></i>
-                    <span th:text="${product.id != null ? 'Ürün Düzenle' : 'Yeni Ürün Ekle'}"></span>
-                </h3>
-
-                <!-- Form: id varsa güncelleme URL'i, yoksa oluşturma URL'i -->
-                <form th:action="${product.id != null ? '/products/edit/' + product.id : '/products'}"
-                      th:object="${product}" method="post" enctype="multipart/form-data">
-
-                    <!-- Ürün Adı -->
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Ürün Adı *</label>
-                        <input type="text" class="form-control" id="name" th:field="*{name}"
-                               th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : ''}"
-                               placeholder="Örn: MacBook Pro">
-                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Hata</div>
-                    </div>
-
-                    <!-- Açıklama -->
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Açıklama</label>
-                        <textarea class="form-control" id="description" th:field="*{description}" rows="3"
-                                  placeholder="Ürün açıklaması..."></textarea>
-                    </div>
-
-                    <!-- Fiyat + Stok (yan yana) -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="price" class="form-label">Fiyat (₺) *</label>
-                            <input type="number" step="0.01" min="0" class="form-control" id="price" th:field="*{price}"
-                                   th:classappend="${#fields.hasErrors('price') ? 'is-invalid' : ''}"
-                                   placeholder="0.00">
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Hata</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="stockQuantity" class="form-label">Stok Miktarı *</label>
-                            <input type="number" min="0" class="form-control" id="stockQuantity" th:field="*{stockQuantity}"
-                                   placeholder="0">
-                        </div>
-                    </div>
-
-                    <!-- Görsel Yükleme -->
-                    <div class="mb-4">
-                        <label for="imageFile" class="form-label">Ürün Görseli</label>
-                        <input class="form-control" type="file" id="imageFile" name="imageFile" accept="image/*">
-                        <div class="form-text">Görsel seçilirse MinIO/S3 depolama alanına yüklenecektir.</div>
-                        <div th:if="${product.imageUrl != null}" class="mt-2">
-                            <small class="text-muted">Mevcut Görsel:</small><br>
-                            <img th:src="${product.imageUrl}" class="mt-1 border rounded" style="max-height: 100px;">
-                        </div>
-                    </div>
-
-                    <!-- Butonlar -->
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-lg"></i>
-                            <span th:text="${product.id != null ? 'Güncelle' : 'Kaydet'}"></span>
+                <div class="d-flex align-items-center gap-3">
+                    <div sec:authorize="isAuthenticated()" class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle btn-sm rounded-pill px-3" type="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-user-circle me-1"></i>
+                            <span sec:authentication="name">Kullanıcı</span>
                         </button>
-                        <a th:href="@{/products}" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left"></i> Geri
-                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow">
+                            <li><span class="dropdown-item-text text-muted" style="font-size: 0.8rem;">Giriş Yapıldı</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="m-0">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i> Çıkış Yap
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
-                </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <h3 class="fw-bold mb-4" style="color: #cbd5e1;">
+                        <i class="fa-solid" th:classappend="${product.id != null ? 'fa-pen-to-square' : 'fa-plus-circle'}"></i>
+                        <span th:text="${product.id != null ? 'Ürün Düzenle' : 'Yeni Ürün Ekle'}"></span>
+                    </h3>
+
+                    <form th:action="${product.id != null ? '/products/edit/' + product.id : '/products'}"
+                          th:object="${product}" method="post" enctype="multipart/form-data">
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label" style="color: #cbd5e1;">Ürün Adı *</label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}"
+                                   placeholder="Örn: MacBook Pro M3">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label" style="color: #cbd5e1;">Açıklama</label>
+                            <textarea class="form-control" id="description" th:field="*{description}" rows="3"
+                                      placeholder="Ürün detayları..."></textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="price" class="form-label" style="color: #cbd5e1;">Fiyat (₺) *</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="price" th:field="*{price}" placeholder="0.00">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="stockQuantity" class="form-label" style="color: #cbd5e1;">Stok Miktarı *</label>
+                                <input type="number" min="0" class="form-control" id="stockQuantity" th:field="*{stockQuantity}" placeholder="0">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="imageFile" class="form-label" style="color: #cbd5e1;">Ürün Görseli (AWS S3)</label>
+                            <input class="form-control" type="file" id="imageFile" name="imageFile" accept="image/*">
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-purple rounded-pill px-4">
+                                <i class="fa-solid fa-check me-1"></i> Kaydet
+                            </button>
+                            <a th:href="@{/products}" class="btn btn-outline-light rounded-pill px-4">İptal</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
